@@ -126,16 +126,17 @@ class TestSchemaChecks:
             )
 
 
-class TestRendering:
-    CLAUSES = [
-        clause("procedure", "phrase", "MRI"),
-        clause("department", "eq", "emergency"),
-        clause("year", "range", "2025~2025"),
-        clause("patient_id", "count", "100001~139385"),
-    ]
+MRI_BY_ER = [
+    clause("procedure", "phrase", "MRI"),
+    clause("department", "eq", "emergency"),
+    clause("year", "range", "2025~2025"),
+    clause("patient_id", "count", "100001~139385"),
+]
 
+
+class TestRendering:
     def test_wire_shape_matches_proxy_search_api(self):
-        assert filters_to_wire(parse_filters(self.CLAUSES)) == [
+        assert filters_to_wire(parse_filters(MRI_BY_ER)) == [
             {"label": "procedure", "value": "MRI"},
             {"label": "department", "value": "emergency"},
             {"label": "year", "value": "2025~2025"},
@@ -143,7 +144,7 @@ class TestRendering:
         ]
 
     def test_legacy_string(self):
-        assert filters_to_legacy_string(parse_filters(self.CLAUSES)) == (
+        assert filters_to_legacy_string(parse_filters(MRI_BY_ER)) == (
             "procedure:MRI,department:emergency,year:2025~2025,"
             "patient_id:count(100001~139385)"
         )
@@ -155,7 +156,7 @@ class TestRendering:
             )
 
     def test_explain_reads_as_plain_language(self):
-        assert explain_filters(parse_filters(self.CLAUSES)) == (
+        assert explain_filters(parse_filters(MRI_BY_ER)) == (
             "count of patient_id over 100001~139385 where procedure contains "
             '"MRI" AND department = emergency AND year = 2025'
         )
